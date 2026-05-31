@@ -13,4 +13,8 @@
             30
         </session-timeout>
     </session-config>
+    <!-- Set Default Page -->
+    <welcome-file-list>
+        <welcome-file>login.html</welcome-file>
+    </welcome-file-list>
 </web-app>
