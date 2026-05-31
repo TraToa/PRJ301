@@ -15,7 +15,7 @@ import java.sql.SQLException;
  */
 public class DbUtils {
 //    Do not change this code
-    private static final String DB_NAME = "FashionManagement";
+    private static final String DB_NAME = "PRJ301_SE2036";
     private static final String DB_USER_NAME = "SA";
     private static final String DB_PASSWORD = "12345";
 
