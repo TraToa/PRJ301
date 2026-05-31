@@ -1,11 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 package pe.controllers;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,12 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author Computing Fundamental - HCM Campus
+ * @author TGDD-MSI
  */
-public class MainController extends HttpServlet {
+public class LoginServlet extends HttpServlet {
 
-    private static final String WELCOME="login.html";
-    private static final String LOGIN_CONTROLLER = "LoginServlet";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -31,20 +29,20 @@ public class MainController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url= WELCOME;
+        PrintWriter out = response.getWriter();
 
-        // Get which button the user clicked
-        String action = request.getParameter("action");
+        String username = request.getParameter("txtUsername");
+        String password = request.getParameter("txtPassword");
+        String button = request.getParameter("action");
+
         try {
-            if (action == null) {
-                
-            } else if (action.equals("Login")) {
-                url = LOGIN_CONTROLLER;
-            }
-        } catch (Exception e) {
-            log("error at MainController: "+ e.toString());
-        }finally{
-            request.getRequestDispatcher(url).forward(request, response);
+            // Print to browser
+            out.println("Username: " + username + ", password: " + password + ", button: " + button);
+
+            // Print to console
+            System.out.println("Username: " + username + ", password: " + password + ", button: " + button);
+        } finally {
+            out.close();
         }
     }
 
