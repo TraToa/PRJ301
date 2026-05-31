@@ -6,16 +6,20 @@ package pe.controllers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import pe.model.registration.RegistrationDAO;
 
 /**
  *
  * @author TGDD-MSI
  */
 public class LoginServlet extends HttpServlet {
+    private static final String SEARCH_PAGE = "search.html";
+    private static final String INVALID_PAGE = "invalid.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -30,18 +34,30 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+        String url = INVALID_PAGE;
 
+        // 1. Controller gets all necessary request parameters' values
         String username = request.getParameter("txtUsername");
         String password = request.getParameter("txtPassword");
-        String button = request.getParameter("action");
+//        String button = request.getParameter("action");
 
         try {
-            // Print to browser
-            out.println("Username: " + username + ", password: " + password + ", button: " + button);
+            // 2. Controller calls methods of Model
+            // 2.1. Controller instantiates DAO
+            RegistrationDAO dao = new RegistrationDAO();
 
-            // Print to console
-            System.out.println("Username: " + username + ", password: " + password + ", button: " + button);
+            // 2.2. Controller calls methods of DAO
+            boolean result = dao.checkLogin(username, password);
+
+            // 3. Controller processes result
+            if (result) {
+                // If username and password exist
+                url = SEARCH_PAGE;
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            log("error at LoginSevlet: "+ e.toString());
         } finally {
+            response.sendRedirect(url);
             out.close();
         }
     }
