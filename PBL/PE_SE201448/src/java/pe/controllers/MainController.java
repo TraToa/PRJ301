@@ -17,7 +17,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class MainController extends HttpServlet {
 
-    private static final String WELCOME="login.jsp";
+    private static final String WELCOME="login.html";
+    private static final String LOGIN_CONTROLLER = "LoginServlet";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -31,11 +32,15 @@ public class MainController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url= WELCOME;
+
+        // Get which button the user clicked
+        String action = request.getParameter("action");
         try {
-            String action= request.getParameter("action");
-            //-----            your code here   --------------------------------
-            
-            //-----            your code here   --------------------------------
+            if (action == null) {
+                
+            } else if (action.equals("Login")) {
+                url = LOGIN_CONTROLLER;
+            }
         } catch (Exception e) {
             log("error at MainController: "+ e.toString());
         }finally{
