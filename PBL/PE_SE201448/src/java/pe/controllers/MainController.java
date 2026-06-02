@@ -19,6 +19,7 @@ public class MainController extends HttpServlet {
 
     private static final String WELCOME="login.html";
     private static final String LOGIN_CONTROLLER = "LoginServlet";
+    private static final String SEARCH_CONTROLLER = "SearchLastNameServlet";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -40,6 +41,14 @@ public class MainController extends HttpServlet {
                 
             } else if (action.equals("Login")) {
                 url = LOGIN_CONTROLLER;
+            } else {
+                switch (action) {
+                    case "Search":
+                        url = SEARCH_CONTROLLER;
+                        break;
+                    default:
+                        throw new AssertionError();
+                }
             }
         } catch (Exception e) {
             log("error at MainController: "+ e.toString());
