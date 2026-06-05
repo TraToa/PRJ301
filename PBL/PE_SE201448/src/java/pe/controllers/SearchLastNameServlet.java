@@ -6,11 +6,15 @@ package pe.controllers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import pe.model.registration.RegistrationDAO;
+import pe.model.registration.RegistrationDTO;
 
 /**
  *
@@ -41,13 +45,40 @@ public class SearchLastNameServlet extends HttpServlet {
             if (searchValue.trim().length() > 0) {
                 // 2. Controller calls methods of Model
                 // 2.1. Controller instantiates DAO
+                RegistrationDAO dao = new RegistrationDAO();
 
                 // 2.2. Controller calls methods of DAO
+                dao.searchLastName(searchValue);
 
                 // 3. Controller processes result
+                List<RegistrationDTO> result = dao.getAccounts();
+
+                if (result == null) { // no match
+                    System.out.println("No record is matched!!!");
+                } else {
+                    System.out.println("");
+                    System.out.println("No.\t|Username\t|Password\t|Full name\t|Role");
+                    int count = 0;
+                    for (RegistrationDTO dto : result) {
+                        System.out.println(""
+                                + ++count
+                                + ".\t|"
+                                        + dto.getUsername()
+                                        + "\t|"
+                                                + dto.getPassword()
+                                                + "\t|"
+                                                        + dto.getFullname()
+                                                        + "\t|"
+                                                                + dto.isRole());
+                    } // traverse each dto in result
+                }
             } else {
                 
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         } finally {
         }
     }
