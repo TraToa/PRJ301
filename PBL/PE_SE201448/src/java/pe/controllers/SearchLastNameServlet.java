@@ -7,19 +7,22 @@ package pe.controllers;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import pe.model.registration.RegistrationDAO;
+import pe.model.registration.RegistrationDTO;
 
 /**
  *
  * @author TGDD-MSI
  */
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "SearchLastNameServlet", urlPatterns = {"/SearchLastNameServlet"})
+public class SearchLastNameServlet extends HttpServlet {
     private static final String SEARCH_PAGE = "search.html";
-    private static final String INVALID_PAGE = "invalid.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,32 +36,50 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        String url = INVALID_PAGE;
+        String url = SEARCH_PAGE;
 
         // 1. Controller gets all necessary request parameters' values
-        String username = request.getParameter("txtUsername");
-        String password = request.getParameter("txtPassword");
-//        String button = request.getParameter("action");
+        String searchValue = request.getParameter("txtSearchValue");
 
         try {
-            // 2. Controller calls methods of Model
-            // 2.1. Controller instantiates DAO
-            RegistrationDAO dao = new RegistrationDAO();
+            if (searchValue.trim().length() > 0) {
+                // 2. Controller calls methods of Model
+                // 2.1. Controller instantiates DAO
+                RegistrationDAO dao = new RegistrationDAO();
 
-            // 2.2. Controller calls methods of DAO
-            boolean result = dao.checkLogin(username, password);
+                // 2.2. Controller calls methods of DAO
+                dao.searchLastName(searchValue);
 
-            // 3. Controller processes result
-            if (result) {
-                // If username and password exist
-                url = SEARCH_PAGE;
+                // 3. Controller processes result
+                List<RegistrationDTO> result = dao.getAccounts();
+
+                if (result == null) { // no match
+                    System.out.println("No record is matched!!!");
+                } else {
+                    System.out.println("");
+                    System.out.println("No.\t|Username\t|Password\t|Full name\t|Role");
+                    int count = 0;
+                    for (RegistrationDTO dto : result) {
+                        System.out.println(""
+                                + ++count
+                                + ".\t|"
+                                        + dto.getUsername()
+                                        + "\t|"
+                                                + dto.getPassword()
+                                                + "\t|"
+                                                        + dto.getFullname()
+                                                        + "\t|"
+                                                                + dto.isRole());
+                    } // traverse each dto in result
+                }
+            } else {
+                
             }
-        } catch (SQLException | ClassNotFoundException e) {
-            log("error at LoginSevlet: "+ e.toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         } finally {
-            response.sendRedirect(url);
-            out.close();
         }
     }
 
