@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -23,6 +24,7 @@ import pe.model.registration.RegistrationDTO;
 @WebServlet(name = "SearchLastNameServlet", urlPatterns = {"/SearchLastNameServlet"})
 public class SearchLastNameServlet extends HttpServlet {
     private static final String SEARCH_PAGE = "search.html";
+    private static final String RESULT_PAGE = "search.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -52,34 +54,16 @@ public class SearchLastNameServlet extends HttpServlet {
 
                 // 3. Controller processes result
                 List<RegistrationDTO> result = dao.getAccounts();
-
-                if (result == null) { // no match
-                    System.out.println("No record is matched!!!");
-                } else {
-                    System.out.println("");
-                    System.out.println("No.\t|Username\t|Password\t|Full name\t|Role");
-                    int count = 0;
-                    for (RegistrationDTO dto : result) {
-                        System.out.println(""
-                                + ++count
-                                + ".\t|"
-                                        + dto.getUsername()
-                                        + "\t|"
-                                                + dto.getPassword()
-                                                + "\t|"
-                                                        + dto.getFullname()
-                                                        + "\t|"
-                                                                + dto.isRole());
-                    } // traverse each dto in result
-                }
-            } else {
-                
+                url = RESULT_PAGE;
+                request.setAttribute("SEARCH_RESULT", result);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } finally {
+            RequestDispatcher rd = request.getRequestDispatcher(url);
+            rd.forward(request, response);
         }
     }
 
