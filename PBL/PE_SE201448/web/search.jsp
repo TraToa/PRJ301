@@ -35,27 +35,48 @@
                             <th>Password</th>
                             <th>Full name</th>
                             <th>Role</th>
+                            <th>Delete</th>
+                            <th>Update</th>
                         </tr>
                     </thead>
                     <tbody>
                         <c:forEach items="${result}" var="dto" varStatus="counter">
+                        <form action="MainController" method="POST">
                             <tr>
                                 <td>
                                     ${counter.count}
                                 .</td>
                                 <td>
                                     ${dto.username}
+                                    <input type="hidden" name="txtUsername" value="${counter.count}" />
                                 </td>
                                 <td>
-                                    ${dto.password}
+                                    <input type="text" name="txtPassword" value="${dto.password}" />
                                 </td>
                                 <td>
                                     ${dto.fullname}
                                 </td>
                                 <td>
-                                    ${dto.role}
+                                    <input type="checkbox" name="chkAdmin" value="ON" 
+                                        <c:if test="${dto.role}">
+                                            checked="check"
+                                        </c:if>
+                                    />
+                                </td>
+                                <td>
+                                    <c:url var="deleteLink" value="MainController">
+                                        <c:param name="action" value="Delete"/>
+                                        <c:param name="pk" value="${dto.username}"/>
+                                        <c:param name="lastSearchValue" value="${searchValue}"/>
+                                    </c:url>
+                                    <a href="${deleteLink}">Delete</a>
+                                </td>
+                                <td>
+                                    <input type="submit" value="Update" name="action" />
+                                    <input type="hidden" name="lastSearchValue" value="${seachValue}" />
                                 </td>
                             </tr>
+                        </form>
                         </c:forEach>
                     </tbody>
                 </table>
