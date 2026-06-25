@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import pe.utils.DbUtils;
@@ -150,6 +151,51 @@ public class RegistrationDAO implements Serializable {
                 }
 
                 // 4. Model processes and returns results (if necessary)
+            }
+        } finally {
+            if (stm != null) {
+                stm.close();
+            }
+
+            if (conn != null) {
+                conn.close();
+            }
+        }
+
+        return result;
+    }
+
+    public boolean updateAccount(String username, String password, boolean role)throws ClassNotFoundException, SQLException {
+        boolean result = false;
+        Connection conn = null;
+        PreparedStatement stm = null;
+
+        try {
+            // 1. Models connects to database
+            conn = DbUtils.getConnection();
+
+            if (conn != null) {// connection available
+                // 2. Model executes query on data in database
+                // 2.1. Create an sQL String
+                String sql = "update Registration "
+                        + "set password = ?, isAdmin = ? "
+                        + "where username = ?";
+
+                // 2.2. Load SQL string to memory (Statement object)
+                stm = conn.prepareStatement(sql);
+                stm.setString(1, password);
+                stm.setBoolean(2, role);
+                stm.setString(3, username);
+
+                // 2.3. Execute Query
+                int affectedRows = stm.executeUpdate();
+
+                // 3. Model loads data from database
+                if (affectedRows > 0) {
+                    result = true;
+                }
+
+                // 4. Model processes data and returns result (if necessary)
             }
         } finally {
             if (stm != null) {
