@@ -48,7 +48,7 @@
                                     .</td>
                                     <td>
                                         ${dto.username}
-                                        <input type="hidden" name="txtUsername" value="${counter.count}" />
+                                        <input type="hidden" name="txtUsername" value="${dto.username}" />
                                     </td>
                                     <td>
                                         <input type="text" name="txtPassword" value="${dto.password}" />
@@ -72,8 +72,8 @@
                                         <a href="${deleteLink}">Delete</a>
                                     </td>
                                     <td>
+                                        <input type="hidden" name="lastSearchValue" value="${param.txtSearchValue}" />
                                         <input type="submit" value="Update" name="action" />
-                                        <input type="hidden" name="lastSearchValue" value="${seachValue}" />
                                     </td>
                                 </tr>
                             </form>
