@@ -6,8 +6,6 @@ package pe.controllers;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -59,8 +57,10 @@ public class UpdateAccountServlet extends HttpServlet {
                         + "?action=Search"
                         + "&txtSearchValue=" + searchValue;
             }
-        } catch (ClassNotFoundException | SQLException ex) {
-            ex.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            log("UpdateAccountServlet _ ClassNotFound " + ex.getMessage());
+        } catch (SQLException ex) {
+            log("UpdateAccountServlet _ SQL " + ex.getMessage());
         } finally {
             response.sendRedirect(url);
         }

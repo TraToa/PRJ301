@@ -56,10 +56,10 @@ public class SearchLastNameServlet extends HttpServlet {
                 url = RESULT_PAGE;
                 request.setAttribute("SEARCH_RESULT", result);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException ex) {
+            log("SearchLastNameServlet _ ClassNotFound " + ex.getMessage());
+        } catch (SQLException ex) {
+            log("SearchLastNameServlet _ SQL " + ex.getMessage());
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);

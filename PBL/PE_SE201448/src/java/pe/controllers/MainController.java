@@ -64,7 +64,7 @@ public class MainController extends HttpServlet {
                 }
             }
         } catch (Exception e) {
-            log("error at MainController: "+ e.toString());
+            log("MainController _  "+ e.getMessage());
         }finally{
             request.getRequestDispatcher(url).forward(request, response);
         }

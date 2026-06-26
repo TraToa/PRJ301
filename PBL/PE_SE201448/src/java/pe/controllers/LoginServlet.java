@@ -54,8 +54,10 @@ public class LoginServlet extends HttpServlet {
                 // If username and password exist
                 url = SEARCH_PAGE;
             }
-        } catch (SQLException | ClassNotFoundException e) {
-            log("error at LoginSevlet: "+ e.toString());
+        } catch (ClassNotFoundException ex) {
+            log("LoginServlet _ ClassNotFound " + ex.getMessage());
+        } catch (SQLException ex) {
+            log("LoginServlet _ SQL " + ex.getMessage());
         } finally {
             response.sendRedirect(url);
             out.close();

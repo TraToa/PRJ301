@@ -56,9 +56,9 @@ public class DeleteAccountServlet extends HttpServlet {
                         + "&txtSearchValue=" + searchValue;
             }
         } catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
+            log("DeleteAccountServlet _ ClassNotFound " + ex.getMessage());
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            log("DeleteAccountServlet _ SQL " + ex.getMessage());
         } finally {
             response.sendRedirect(url);
         }
