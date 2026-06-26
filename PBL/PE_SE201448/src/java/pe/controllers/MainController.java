@@ -22,6 +22,7 @@ public class MainController extends HttpServlet {
     private static final String SEARCH_CONTROLLER = "SearchLastNameServlet";
     private static final String DELETE_ACCOUNT_CONTROLLER = "DeleteAccountServlet";
     private static final String UPDATE_ACCOUNT_CONTROLLER = "UpdateAccountServlet";
+    private static final String CREATE_ACCOUNT_CONTROLLER = "CreateAccountServlet";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -54,6 +55,9 @@ public class MainController extends HttpServlet {
                         break;
                     case "Update":
                         url = UPDATE_ACCOUNT_CONTROLLER;
+                        break;
+                    case "Create New Account":
+                        url = CREATE_ACCOUNT_CONTROLLER;
                         break;
                     default:
                         throw new AssertionError();
