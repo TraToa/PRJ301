@@ -6,13 +6,15 @@ package pe.controllers;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import pe.model.registration.RegistrationCreateError;
 import pe.model.registration.RegistrationDAO;
 import pe.model.registration.RegistrationDTO;
 
@@ -20,10 +22,10 @@ import pe.model.registration.RegistrationDTO;
  *
  * @author TGDD-MSI
  */
-@WebServlet(name = "SearchLastNameServlet", urlPatterns = {"/SearchLastNameServlet"})
-public class SearchLastNameServlet extends HttpServlet {
-    private static final String SEARCH_PAGE = "search.html";
-    private static final String RESULT_PAGE = "search.jsp";
+@WebServlet(name = "CreateAccountServlet", urlPatterns = {"/CreateAccountServlet"})
+public class CreateAccountServlet extends HttpServlet {
+    private static final String ERROR_PAGE = "createAccount.jsp";
+    private static final String LOGIN_PAGE = "login.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,29 +39,69 @@ public class SearchLastNameServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = SEARCH_PAGE;
+        String url = ERROR_PAGE;
 
         // 1. Controller gets all necessary request parameters' values
-        String searchValue = request.getParameter("txtSearchValue");
+        String username = request.getParameter("txtUsername");
+        String password = request.getParameter("txtPassword");
+        String confirm = request.getParameter("txtConfirm");
+        String fullName = request.getParameter("txtFullname");
+
+        RegistrationCreateError errors = new RegistrationCreateError();
+        boolean foundErr = false;
 
         try {
-            if (searchValue.trim().length() > 0) {
+            // * Validate user errors
+            if (username.trim().length() < 6 || username.trim().length() > 30) {
+                foundErr = true;
+                errors.setUsernameLengthErr("Username must be typed from 6 to 30 characters");
+            }
+
+            if (password.trim().length() < 6 || password.trim().length() > 20) {
+                foundErr = true;
+                errors.setPasswordLengthErr("Password must be typed from 6 to 20 characters");
+            } else if (!confirm.trim().equals(password.trim())) {
+                foundErr = true;
+                errors.setConfirmNotMatched("Confirm must match password");
+            }
+
+            if (fullName.trim().length() < 2 || fullName.trim().length() > 50) {
+                foundErr = true;
+                errors.setFullNameLengthErr("Full name must be typed from 2 to 50 characters");
+            }
+
+            if (foundErr) { // Found  user errors
+                // Show errors --> Set to an attribute, transfer to error page
+                 request.setAttribute("CREATE_ERRORS", errors);
+            } else {
                 // 2. Controller calls methods of Model
                 // 2.1. Controller instantiates DAO
                 RegistrationDAO dao = new RegistrationDAO();
 
                 // 2.2. Controller calls methods of DAO
-                dao.searchLastName(searchValue);
+                RegistrationDTO account = new RegistrationDTO(
+                    username,
+                    password,
+                    fullName,
+                    false
+                );
+                boolean result = dao.insertAccount(account);
 
                 // 3. Controller processes result
-                List<RegistrationDTO> result = dao.getAccounts();
-                url = RESULT_PAGE;
-                request.setAttribute("SEARCH_RESULT", result);
+                if (result) { // Inserted account successfully
+                    url = LOGIN_PAGE;
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            String errMsg = ex.getMessage();
+            log("CreateAccountServlet _ SQL " + errMsg);
+            if (errMsg.contains("duplicate")) {
+                errors.setUsernameExisted(username + " EXISTED!!!");
+                // Update
+                request.setAttribute("CREATE_ERRORS", errors);
+            }
+        } catch (ClassNotFoundException ex) {
+            log("CreateAccountServlet _ ClassNotFound " + ex.getMessage());
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
