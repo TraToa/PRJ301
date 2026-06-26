@@ -6,24 +6,22 @@ package pe.controllers;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
-import javax.servlet.RequestDispatcher;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import pe.model.registration.RegistrationDAO;
-import pe.model.registration.RegistrationDTO;
 
 /**
  *
  * @author TGDD-MSI
  */
-@WebServlet(name = "SearchLastNameServlet", urlPatterns = {"/SearchLastNameServlet"})
-public class SearchLastNameServlet extends HttpServlet {
-    private static final String SEARCH_PAGE = "search.html";
-    private static final String RESULT_PAGE = "search.jsp";
+@WebServlet(name = "UpdateAccountServlet", urlPatterns = {"/UpdateAccountServlet"})
+public class UpdateAccountServlet extends HttpServlet {
+    private static final String ERROR_PAGE = "error.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,32 +35,34 @@ public class SearchLastNameServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = SEARCH_PAGE;
+        String url = ERROR_PAGE;
 
         // 1. Controller gets all necessary request parameters' values
-        String searchValue = request.getParameter("txtSearchValue");
+        String searchValue = request.getParameter("lastSearchValue");
+        String username = request.getParameter("txtUsername");
+        String password = request.getParameter("txtPassword");
+        boolean role = request.getParameter("chkAdmin") != null;
 
         try {
-            if (searchValue.trim().length() > 0) {
-                // 2. Controller calls methods of Model
-                // 2.1. Controller instantiates DAO
-                RegistrationDAO dao = new RegistrationDAO();
+            // 2. Controller calls methods of Model
+            // 2.1. Controller instantiates DAO
+            RegistrationDAO dao = new RegistrationDAO();
 
-                // 2.2. Controller calls methods of DAO
-                dao.searchLastName(searchValue);
+            // 2.2 Controller calls methods of DAO
+            boolean result = dao.updateAccount(username, password, role);
 
-                // 3. Controller processes result
-                List<RegistrationDTO> result = dao.getAccounts();
-                url = RESULT_PAGE;
-                request.setAttribute("SEARCH_RESULT", result);
+            // 3. Controller processes result
+            if (result) { // Updated successfully
+                // Refresh -> call previous functionality again
+                // --> remind --> add request parameters into URL
+                url = "MainController"
+                        + "?action=Search"
+                        + "&txtSearchValue=" + searchValue;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException | SQLException ex) {
+            ex.printStackTrace();
         } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(url);
-            rd.forward(request, response);
+            response.sendRedirect(url);
         }
     }
 
